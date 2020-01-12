@@ -5,8 +5,8 @@
 import RNFS from 'react-native-fs';
 import dataConverter from './dataConventer';
 
-let fileContentReadLength: number = 100;
-let __fileContentReadLength: number = 100;
+let fileContentReadLength: number = 100 * 5;
+let __fileContentReadLength: number = fileContentReadLength;
 
 const pointer = {
   current: 0,
@@ -17,7 +17,7 @@ const pointer = {
 // direction
 // 1: 向后
 // -1: 向前
-const readFile = (direction = 1, callback = res => {}) => {
+const readFile = (direction = 1, callback = (res: any) => {}) => {
   // 判断指针位置
   let targetPointer = pointer.current;
   if (direction > 0) {
@@ -38,7 +38,7 @@ const readFile = (direction = 1, callback = res => {}) => {
     fileContentReadLength = __fileContentReadLength;
   }
 
-  // console.log('targetPointer', targetPointer, fileContentReadLength);
+  console.log('targetPointer', targetPointer, fileContentReadLength);
 
   RNFS.read(
     `${RNFS.DocumentDirectoryPath}/data.csv`,
@@ -48,6 +48,7 @@ const readFile = (direction = 1, callback = res => {}) => {
   ).then(res => {
     // console.log('@readFile() res', res)
     if (res.length === 0) {
+      callback([]);
       return;
     }
     const {data, nextPointerPosition, validDataStartIndex} = dataConverter(
