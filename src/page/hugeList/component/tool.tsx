@@ -1,5 +1,6 @@
 import React, {ReactElement} from 'react';
 import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
+import RNFS from 'react-native-fs';
 import {
   copyFile,
   readFile,
@@ -7,6 +8,7 @@ import {
   collect,
   getData,
   getDataObject,
+  getDataCount,
 } from '../../../manager/csvDataLoader';
 
 export default function component() {
@@ -63,6 +65,11 @@ export default function component() {
       );
       // console.log('getDataObject', getDataObject())
     });
+  });
+
+  $generateButton('读取文件数据', async () => {
+    const dataCount = await getDataCount();
+    console.log('dataCount', dataCount);
   });
 
   return <View style={styles.container}>{buttons}</View>;
