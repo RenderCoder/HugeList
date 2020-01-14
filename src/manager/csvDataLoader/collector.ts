@@ -6,7 +6,7 @@ import {loadPiece, setReadLength} from './loadPiece';
 setReadLength(500);
 
 let dataArray: Cell[] = []; // 存储的数据数组（队列）
-let maxLength = 50; // 存储的数据数组（队列）的最大长度
+let maxLength = 100; // 存储的数据数组（队列）的最大长度
 let dataObject: {[key: number]: Cell} = {}; // 存储的数据数组（队列）的对象表达
 
 export const startKey = (): number => {
