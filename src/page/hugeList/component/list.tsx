@@ -1,6 +1,11 @@
 import React, {ReactElement, useState, useEffect} from 'react';
 import {FlatList, TouchableOpacity, Text} from 'react-native';
-import {collect, getData, getDataObject} from '../../../manager/csvDataLoader';
+import {
+  collect,
+  getData,
+  getDataObject,
+  getDataCount,
+} from '../../../manager/csvDataLoader';
 
 type Props = {
   data: String[];
@@ -52,11 +57,22 @@ const onViewableItemsChanged = ({
   });
 };
 
+const useDidMount = (callback: () => void) => {
+  useEffect(callback, []);
+};
+
 export default function component(props: Props) {
   const [refreshFlag, setRefreshFlag] = useState(new Date().getTime());
+  const [listData, setListData] = useState<number[]>(new Array(0).fill(0));
 
-  useEffect(() => {
+  // let listData = new Array(1000).fill(0).map((_, index: number) => index);
+
+  useDidMount(() => {
     refreshList = refresh;
+    getDataCount().then((dataCount: number) => {
+      setListData(new Array(dataCount).fill(0));
+      refresh();
+    });
   });
 
   const refresh = () => {
@@ -103,16 +119,14 @@ export default function component(props: Props) {
       index: index,
     };
   };
-
-  //const data = new Array(getData().length).fill(0);
-
+  
   return (
     <FlatList
       style={style.list}
-      data={new Array(1000).fill(0).map((_, index: number) => index)}
+      data={listData}
       extraData={refreshFlag}
       renderItem={renderItem}
-      keyExtractor={item => `${item}`}
+      keyExtractor={(_: number, index: number) => `${index}`}
       getItemLayout={getItemLayout}
       onViewableItemsChanged={onViewableItemsChanged}
     />
