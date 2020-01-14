@@ -110,12 +110,12 @@ export default function component(props: Props) {
         <View style={style.cellContainer}>
           <View style={style.cell}>
             <ImageBackground source={imageSource} style={style.cellImage}>
-              <Text>Loading</Text>
+              <Text>{data ? '' : 'Loading'}</Text>
             </ImageBackground>
             <View style={style.cellDescriptionContainer}>
               <Text>{productName}</Text>
               <Text>{categoryName}</Text>
-              <Text>{price}</Text>
+              <Text>$ {Number(price).toFixed(2)}</Text>
             </View>
           </View>
         </View>
