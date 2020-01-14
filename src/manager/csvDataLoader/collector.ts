@@ -25,6 +25,9 @@ export const endKey = (): number => {
 
 // 追加尾部数组
 const addTail = (newDataArray: Cell[]) => {
+  if (!newDataArray) {
+    return;
+  }
   if (dataArray.length > 0) {
     if ((newDataArray[0].key || 0) > endKey() + 1) {
       dataArray = [...newDataArray];
@@ -44,6 +47,9 @@ const addTail = (newDataArray: Cell[]) => {
 
 // 追加头部数组
 const addHead = (newDataArray: Cell[]) => {
+  if (!newDataArray) {
+    return;
+  }
   if (dataArray.length > 0) {
     if ((newDataArray[newDataArray.length - 1].key || 0) + 1 < startKey()) {
       dataArray = [...newDataArray];
