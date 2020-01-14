@@ -1,14 +1,27 @@
 import React, {ReactElement, useState, useEffect} from 'react';
-import {FlatList, TouchableOpacity, Text} from 'react-native';
+import {
+  FlatList,
+  TouchableOpacity,
+  Text,
+  ImageBackground,
+  ImageSourcePropType,
+  View,
+  StyleSheet,
+} from 'react-native';
 import {
   collect,
   getData,
   getDataObject,
   getDataCount,
 } from '../../../manager/csvDataLoader';
+import ImageAssetsForMaterial from '../assets/material';
 
 type Props = {
   data: String[];
+};
+
+const __CONSTANT__ = {
+  CellHeight: 220,
 };
 
 interface ViewToken {
@@ -32,14 +45,20 @@ const onViewableItemsChanged = ({
     clearTimeout(__collectActionTimeoutId);
     __collectActionTimeoutId = null;
   }
+
+  const getIndexForNumber = (targetNumber: number) => {
+    if (viewableItems[targetNumber]) {
+      return viewableItems[targetNumber].index || 0;
+    }
+    return 0;
+  };
+
   __collectActionTimeoutId = setTimeout(() => {
     __collectActionTimeoutId = null;
-    collect(viewableItems[0].index || 0, 1, (success: boolean) => {
-      collect(
-        viewableItems[viewableItems.length - 1].index || 0,
-        1,
-        refreshList,
-      );
+    const startIndex = getIndexForNumber(0) * 2;
+    const endIndex = getIndexForNumber(viewableItems.length - 1) * 2 + 1;
+    collect(startIndex, 1, (success: boolean) => {
+      collect(endIndex, 1, refreshList);
     });
   }, 100);
 };
@@ -52,12 +71,10 @@ export default function component(props: Props) {
   const [refreshFlag, setRefreshFlag] = useState(new Date().getTime());
   const [listData, setListData] = useState<number[]>(new Array(0).fill(0));
 
-  // let listData = new Array(1000).fill(0).map((_, index: number) => index);
-
   useDidMount(() => {
     refreshList = refresh;
     getDataCount().then((dataCount: number) => {
-      setListData(new Array(dataCount).fill(0));
+      setListData(new Array(dataCount >> 1).fill(0));
       refresh();
     });
   });
@@ -74,21 +91,41 @@ export default function component(props: Props) {
     index: number;
   }): ReactElement => {
     const allData = getDataObject();
-    if (!allData[index]) {
-      return (
-        <TouchableOpacity style={style.cell}>
-          <Text>Loading...</Text>
-        </TouchableOpacity>
-      );
-    }
+    const cardIndex = {
+      left: index * 2,
+      right: index * 2 + 1,
+    };
 
-    const data: Cell = allData[index];
+    const generateCard = (index: number) => {
+      const data: Cell | undefined = allData[index];
+      const imageSource: ImageSourcePropType = data
+        ? ImageAssetsForMaterial[data.imageFile]
+        : [];
+      const {productName, categoryName, price} = data || {
+        productName: '...',
+        categoryName: '',
+        price: '',
+      };
+      return (
+        <View style={style.cellContainer}>
+          <View style={style.cell}>
+            <ImageBackground source={imageSource} style={style.cellImage}>
+              <Text>Loading</Text>
+            </ImageBackground>
+            <View style={style.cellDescriptionContainer}>
+              <Text>{productName}</Text>
+              <Text>{categoryName}</Text>
+              <Text>{price}</Text>
+            </View>
+          </View>
+        </View>
+      );
+    };
     return (
-      <TouchableOpacity style={style.cell}>
-        <Text>
-          {data.categoryName} {data.productName} {data.price}
-        </Text>
-      </TouchableOpacity>
+      <View style={style.rowContainer}>
+        {generateCard(cardIndex.left)}
+        {generateCard(cardIndex.right)}
+      </View>
     );
   };
 
@@ -101,8 +138,8 @@ export default function component(props: Props) {
     index: number;
   } => {
     return {
-      length: 100,
-      offset: index * 100,
+      length: __CONSTANT__.CellHeight,
+      offset: index * __CONSTANT__.CellHeight,
       index: index,
     };
   };
@@ -120,15 +157,36 @@ export default function component(props: Props) {
   );
 }
 
-const style = {
+const style = StyleSheet.create({
   list: {
     flex: 1,
   },
-  cell: {
-    height: 100,
+  cellContainer: {
+    height: __CONSTANT__.CellHeight,
     padding: 12,
-    borderWidth: 0,
-    borderTopColor: 'rgba(0,0,0,0.1)',
-    borderTopWidth: 1,
+    width: '50%',
   },
-};
+  cell: {
+    padding: 0,
+    // borderWidth: 0,
+    // borderTopColor: 'rgba(0,0,0,0.1)',
+    // borderTopWidth: 1,
+    borderRadius: 10,
+    overflow: 'hidden',
+    backgroundColor: '#e6e9ef',
+  },
+  cellDescriptionContainer: {
+    padding: 12,
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    width: '100%',
+  },
+  cellImage: {
+    width: '100%',
+    height: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.1)',
+  },
+});
