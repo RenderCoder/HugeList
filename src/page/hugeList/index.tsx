@@ -8,7 +8,7 @@ export default function page(): ReactElement {
   return (
     <>
       <Text style={styles.title}>Huge List</Text>
-      <ToolComponent />
+      <ToolComponent display={false} />
       <ListComponent data={listData} />
     </>
   );

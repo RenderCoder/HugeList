@@ -11,7 +11,13 @@ import {
   getDataCount,
 } from '../../../manager/csvDataLoader';
 
-export default function component() {
+export default function component(
+  props: {display?: boolean} = {display: true},
+) {
+  if (!props.display) {
+    return null;
+  }
+
   const buttons: ReactElement[] = [];
   const $generateButton = (title: String, onPress: () => void): void => {
     const button = (
