@@ -9,6 +9,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import {
+  copyFile,
   collect,
   getData,
   getDataObject,
@@ -73,9 +74,11 @@ export default function component(props: Props) {
 
   useDidMount(() => {
     refreshList = refresh;
-    getDataCount().then((dataCount: number) => {
-      setListData(new Array(dataCount >> 1).fill(0));
-      refresh();
+    copyFile(false).then(() => {
+      getDataCount().then((dataCount: number) => {
+        setListData(new Array(dataCount >> 1).fill(0));
+        refresh();
+      });
     });
   });
 
