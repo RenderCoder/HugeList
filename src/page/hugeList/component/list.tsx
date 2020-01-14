@@ -20,7 +20,6 @@ interface ViewToken {
 }
 
 let refreshList = () => {};
-let __viewableItemChangedTime: number = new Date().getTime();
 let __collectActionTimeoutId: number | null = null;
 const onViewableItemsChanged = ({
   viewableItems,
@@ -29,22 +28,6 @@ const onViewableItemsChanged = ({
   viewableItems: Array<ViewToken>;
   changed: Array<ViewToken>;
 }) => {
-  // console.log('@viewableItems', viewableItems);
-  /*
-  const now = new Date().getTime();
-  if (now - __viewableItemChangedTime < 100) {
-    console.log('@skip now - __viewableItemChangedTime < 100');
-    refreshList();
-    return;
-  }
-  __viewableItemChangedTime = now;
-
-  if (viewableItems.length === 0) {
-    console.log('@skip viewableItems.length === 0');
-    refreshList();
-    return;
-  }
-  */
   if (__collectActionTimeoutId !== null) {
     clearTimeout(__collectActionTimeoutId);
     __collectActionTimeoutId = null;
@@ -59,20 +42,6 @@ const onViewableItemsChanged = ({
       );
     });
   }, 100);
-  /*
-  collect(viewableItems[0].index || 0, 1, (success: boolean) => {
-    // console.log('@collect success 0', success);
-    collect(viewableItems[viewableItems.length - 1].index || 0, 1, () => {
-      // console.log('@result', getData());
-      // console.log('@collect success 1', success);
-      // console.log(
-      //   `dataArray`,
-      //   getData().map(item => item.key),
-      // );
-      refreshList();
-    });
-  });
-  */
 };
 
 const useDidMount = (callback: () => void) => {
